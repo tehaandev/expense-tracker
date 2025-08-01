@@ -15,9 +15,7 @@ import { UsersModule } from './users/users.module';
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        uri:
-          configService.get<string>('MONGODB_URI') ||
-          'mongodb://localhost:27017/expense-tracker',
+        uri: configService.getOrThrow<string>('MONGODB_URI'),
       }),
       inject: [ConfigService],
     }),
