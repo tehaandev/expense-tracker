@@ -54,26 +54,20 @@ export default function ExpenseDashboard() {
 
         {/* Navigation Tabs */}
         <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg w-fit">
-          <button
+          <Button
+            variant={activeTab === "overview" ? "default" : "secondary"}
             onClick={() => setActiveTab("overview")}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              activeTab === "overview"
-                ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-600 hover:text-gray-900"
-            }`}
+            size="sm"
           >
             Overview
-          </button>
-          <button
+          </Button>
+          <Button
+            variant={activeTab === "expenses" ? "default" : "secondary"}
+            size="sm"
             onClick={() => setActiveTab("expenses")}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              activeTab === "expenses"
-                ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-600 hover:text-gray-900"
-            }`}
           >
             All Expenses
-          </button>
+          </Button>
         </div>
 
         {/* Content */}
