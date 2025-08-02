@@ -27,7 +27,6 @@ class AuthService {
         if (error.response?.status === 401) {
           // Token expired or invalid, logout user
           this.logout();
-          window.location.href = "/login";
         }
         return Promise.reject(error);
       }
