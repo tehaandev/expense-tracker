@@ -1,21 +1,32 @@
 import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router";
-import PublicRoute from "./routes/PublicRoute";
-import PrivateRoute from "./routes/PrivateRoute";
-import { LoginForm } from "./components/login-form";
+import ProtectedRoute from "./features/auth/components/ProtectedRoutes";
+import { AuthProvider } from "./features/auth/components/AuthProvider";
+import PublicRoute from "./features/auth/components/PublicRoute";
+import LoginForm from "./components/login-form";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<PublicRoute />}>
-          <Route index element={<div>Home Page</div>} />
-          <Route path="login" element={<LoginForm />} />
-          <Route path="register" element={<div>Register Page</div>} />
-        </Route>
-        <Route path="/dashboard" element={<PrivateRoute />} />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<PublicRoute />}>
+            <Route path="login" element={<LoginForm />} />
+            <Route path="register" element={<div>Register Page</div>} />
+          </Route>
+        </Routes>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <div>Dashboard Page</div>
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
