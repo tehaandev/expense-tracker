@@ -1,5 +1,6 @@
 import { API } from "@/lib/api";
 import type { LoginCredentials, LoginResponse, User } from "./auth.type";
+import type { UpdateExpenseLimitDto } from "../expenses/expense.types";
 
 const TOKEN_KEY = "auth_token";
 const USER_KEY = "auth_user";
@@ -102,6 +103,24 @@ class AuthService {
   getAuthHeaders(): Record<string, string> {
     const token = this.getToken();
     return token ? { Authorization: `Bearer ${token}` } : {};
+  }
+
+  async updateExpenseLimit(data: UpdateExpenseLimitDto): Promise<User> {
+    try {
+      const response = await API.put<{ user: User }>(
+        "/auth/profile/expense-limit",
+        data
+      );
+
+      // Update user in localStorage
+      this.setUser(response.data.user);
+      return response.data.user;
+    } catch (error: unknown) {
+      const apiError = error as { response?: { data?: { message?: string } } };
+      const errorMessage =
+        apiError.response?.data?.message || "Failed to update expense limit";
+      throw new Error(errorMessage);
+    }
   }
 }
 

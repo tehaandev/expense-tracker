@@ -6,6 +6,7 @@ import type {
   ExpenseQueryParams,
   ExpenseListResponse,
   ExpenseStats,
+  MonthlyExpenseStats,
 } from "./expense.types";
 
 interface ApiError {
@@ -96,6 +97,21 @@ class ExpenseService {
       const apiError = error as ApiError;
       const errorMessage =
         apiError.response?.data?.message || "Failed to fetch expense stats";
+      throw new Error(errorMessage);
+    }
+  }
+
+  async getMonthlyExpenseStats(): Promise<MonthlyExpenseStats> {
+    try {
+      const response = await authService
+        .getApiInstance()
+        .get<MonthlyExpenseStats>(`${this.baseUrl}/monthly-stats`);
+      return response.data;
+    } catch (error: unknown) {
+      const apiError = error as ApiError;
+      const errorMessage =
+        apiError.response?.data?.message ||
+        "Failed to fetch monthly expense stats";
       throw new Error(errorMessage);
     }
   }

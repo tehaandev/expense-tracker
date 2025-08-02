@@ -47,6 +47,24 @@ export interface ExpenseStats {
   expensesByCategory: Array<{ category: string; total: number }>;
 }
 
+export interface MonthlyExpenseStats {
+  currentMonthTotal: number;
+  monthlyLimit: number | null;
+  percentageUsed: number;
+  isLimitSet: boolean;
+  limitEnabled: boolean;
+  currency: string;
+  alertLevel: "safe" | "warning" | "critical" | "exceeded";
+  daysRemainingInMonth: number;
+  dailyAverage: number;
+}
+
+export interface UpdateExpenseLimitDto {
+  monthlyExpenseLimit?: number;
+  currency?: string;
+  limitEnabled?: boolean;
+}
+
 export const EXPENSE_CATEGORIES = [
   "Food & Dining",
   "Transportation",

@@ -1,9 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { expenseService } from "../expense.service";
+import { authService } from "@/features/auth/auth.service";
 import type {
   CreateExpenseDto,
   ExpenseQueryParams,
   UpdateExpenseDto,
+  UpdateExpenseLimitDto,
 } from "../expense.types";
 
 // Query keys
@@ -15,6 +17,7 @@ export const expenseKeys = {
   details: () => [...expenseKeys.all, "detail"] as const,
   detail: (id: string) => [...expenseKeys.details(), id] as const,
   stats: () => [...expenseKeys.all, "stats"] as const,
+  monthlyStats: () => [...expenseKeys.all, "monthly-stats"] as const,
 };
 
 // Get expenses list
@@ -80,6 +83,32 @@ export const useDeleteExpense = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: expenseKeys.lists() });
       queryClient.invalidateQueries({ queryKey: expenseKeys.stats() });
+      queryClient.invalidateQueries({ queryKey: expenseKeys.monthlyStats() });
+    },
+  });
+};
+
+// Get monthly expense stats
+export const useMonthlyExpenseStats = () => {
+  return useQuery({
+    queryKey: expenseKeys.monthlyStats(),
+    queryFn: () => expenseService.getMonthlyExpenseStats(),
+    staleTime: 1 * 60 * 1000, // 1 minute (more frequent updates for limit tracking)
+  });
+};
+
+// Update expense limit
+export const useUpdateExpenseLimit = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: UpdateExpenseLimitDto) =>
+      authService.updateExpenseLimit(data),
+    onSuccess: () => {
+      // Invalidate monthly stats to refresh limit data
+      queryClient.invalidateQueries({ queryKey: expenseKeys.monthlyStats() });
+      // Also invalidate auth profile if needed
+      queryClient.invalidateQueries({ queryKey: ["auth", "profile"] });
     },
   });
 };

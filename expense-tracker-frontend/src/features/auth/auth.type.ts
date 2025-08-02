@@ -2,6 +2,9 @@ export interface User {
   id: string;
   email: string;
   name?: string;
+  monthlyExpenseLimit?: number;
+  currency: string;
+  limitEnabled: boolean;
 }
 
 export interface LoginCredentials {

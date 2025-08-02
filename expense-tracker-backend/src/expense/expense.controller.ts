@@ -41,6 +41,11 @@ export class ExpenseController {
     return this.expenseService.getExpenseStats(req.user._id);
   }
 
+  @Get('monthly-stats')
+  async getMonthlyStats(@Request() req: any) {
+    return this.expenseService.getMonthlyExpenseStats(req.user._id);
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string, @Request() req: any) {
     return this.expenseService.findOne(id, req.user._id);

@@ -4,15 +4,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ExpenseForm from "./ExpenseForm";
 import ExpenseList from "./ExpenseList";
 import ExpenseStats from "./ExpenseStats";
+import MonthlyLimitAlert from "./MonthlyLimitAlert";
+import MonthlyProgressBar from "./MonthlyProgressBar";
+import ExpenseLimitModal from "./ExpenseLimitModal";
+import { useMonthlyExpenseStats } from "../hooks/useExpenses";
 import type { Expense } from "../expense.types";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Settings } from "lucide-react";
 
 export default function ExpenseDashboard() {
   const [showForm, setShowForm] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | undefined>();
+  const [isLimitModalOpen, setIsLimitModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"overview" | "expenses">(
     "overview"
   );
+
+  // Get monthly stats for alerts and progress
+  const { data: monthlyStats } = useMonthlyExpenseStats();
 
   const handleEditExpense = (expense: Expense) => {
     setEditingExpense(expense);
@@ -43,14 +51,32 @@ export default function ExpenseDashboard() {
             </p>
           </div>
 
-          <Button
-            onClick={() => setShowForm(true)}
-            className="flex items-center gap-2"
-          >
-            <Plus className="h-4 w-4" />
-            Add Expense
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setIsLimitModalOpen(true)}
+              className="flex items-center gap-2"
+            >
+              <Settings className="h-4 w-4" />
+              Monthly Limit
+            </Button>
+            <Button
+              onClick={() => setShowForm(true)}
+              className="flex items-center gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              Add Expense
+            </Button>
+          </div>
         </div>
+
+        {/* Monthly Limit Alert */}
+        {monthlyStats && (
+          <MonthlyLimitAlert
+            stats={monthlyStats}
+            onOpenSettings={() => setIsLimitModalOpen(true)}
+          />
+        )}
 
         {/* Navigation Tabs */}
         <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg w-fit">
@@ -77,6 +103,14 @@ export default function ExpenseDashboard() {
             {activeTab === "overview" ? (
               <div className="space-y-6">
                 <ExpenseStats />
+
+                {/* Monthly Progress */}
+                {monthlyStats && (
+                  <MonthlyProgressBar
+                    stats={monthlyStats}
+                    onOpenSettings={() => setIsLimitModalOpen(true)}
+                  />
+                )}
 
                 {/* Recent Expenses Preview */}
                 <Card>
@@ -137,6 +171,13 @@ export default function ExpenseDashboard() {
             )}
           </div>
         </div>
+
+        {/* Expense Limit Modal */}
+        <ExpenseLimitModal
+          isOpen={isLimitModalOpen}
+          onClose={() => setIsLimitModalOpen(false)}
+          currentStats={monthlyStats}
+        />
       </div>
     </div>
   );

@@ -5,10 +5,12 @@ import {
   Get,
   UseGuards,
   Request,
+  Put,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { UpdateExpenseLimitDto } from './dto/update-expense-limit.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
@@ -33,7 +35,22 @@ export class AuthController {
         id: req.user._id,
         name: req.user.name,
         email: req.user.email,
+        monthlyExpenseLimit: req.user.monthlyExpenseLimit,
+        currency: req.user.currency,
+        limitEnabled: req.user.limitEnabled,
       },
     };
+  }
+
+  @Put('profile/expense-limit')
+  @UseGuards(JwtAuthGuard)
+  async updateExpenseLimit(
+    @Body() updateExpenseLimitDto: UpdateExpenseLimitDto,
+    @Request() req: any,
+  ) {
+    return this.authService.updateExpenseLimit(
+      req.user._id,
+      updateExpenseLimitDto,
+    );
   }
 }

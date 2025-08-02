@@ -6,6 +6,9 @@ export interface UserDocument extends Document {
   email: string;
   password: string;
   name: string;
+  monthlyExpenseLimit?: number;
+  currency: string;
+  limitEnabled: boolean;
 }
 
 const UserSchema = new Schema<UserDocument>(
@@ -17,6 +20,20 @@ const UserSchema = new Schema<UserDocument>(
       unique: true,
     },
     password: { type: String, required: [true, 'Password is required'] },
+    monthlyExpenseLimit: {
+      type: Number,
+      min: [0, 'Monthly expense limit must be positive'],
+      default: null,
+    },
+    currency: {
+      type: String,
+      enum: ['USD', 'LKR', 'EUR', 'GBP', 'INR', 'AUD', 'CAD', 'JPY'],
+      default: 'USD',
+    },
+    limitEnabled: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true },
 );

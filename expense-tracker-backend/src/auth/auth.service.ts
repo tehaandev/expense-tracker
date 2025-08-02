@@ -8,6 +8,7 @@ import { UsersService } from '../users/users.service';
 import { comparePassword } from '../utils/hashPassword';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { UpdateExpenseLimitDto } from './dto/update-expense-limit.dto';
 
 @Injectable()
 export class AuthService {
@@ -79,5 +80,37 @@ export class AuthService {
 
   async validateUser(id: string) {
     return this.usersService.findById(id);
+  }
+
+  async updateExpenseLimit(userId: string, updateDto: UpdateExpenseLimitDto) {
+    const user = await this.usersService.findById(userId);
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    // Update user's expense limit settings
+    if (updateDto.monthlyExpenseLimit !== undefined) {
+      user.monthlyExpenseLimit = updateDto.monthlyExpenseLimit;
+    }
+    if (updateDto.currency !== undefined) {
+      user.currency = updateDto.currency;
+    }
+    if (updateDto.limitEnabled !== undefined) {
+      user.limitEnabled = updateDto.limitEnabled;
+    }
+
+    await user.save();
+
+    return {
+      message: 'Expense limit updated successfully',
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        monthlyExpenseLimit: user.monthlyExpenseLimit,
+        currency: user.currency,
+        limitEnabled: user.limitEnabled,
+      },
+    };
   }
 }

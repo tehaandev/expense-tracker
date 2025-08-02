@@ -8,11 +8,13 @@ import { Model } from 'mongoose';
 import { CreateExpenseDto } from './dto/create-expense.dto';
 import { UpdateExpenseDto, ExpenseQueryDto } from './dto/update-expense.dto';
 import { ExpenseDocument } from './entities/expense.entity';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class ExpenseService {
   constructor(
     @InjectModel('Expense') private expenseModel: Model<ExpenseDocument>,
+    private usersService: UsersService,
   ) {}
 
   async create(
@@ -172,6 +174,88 @@ export class ExpenseService {
       totalExpenses,
       balance,
       expensesByCategory: categoryStats,
+    };
+  }
+
+  async getMonthlyExpenseStats(userId: string): Promise<{
+    currentMonthTotal: number;
+    monthlyLimit?: number;
+    limitEnabled: boolean;
+    currency: string;
+    percentageUsed: number;
+    daysRemainingInMonth: number;
+    dailyAverage: number;
+    alertLevel: 'safe' | 'warning' | 'critical' | 'exceeded';
+    isLimitSet: boolean;
+  }> {
+    // Get user's limit settings
+    const user = await this.usersService.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Get current month's start and end dates
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    const daysRemainingInMonth = Math.ceil(
+      (endOfMonth.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
+    );
+    const currentDay = now.getDate();
+
+    // Calculate current month's total expenses
+    const monthlyExpensesResult = await this.expenseModel
+      .aggregate([
+        {
+          $match: {
+            userId,
+            type: 'expense',
+            date: {
+              $gte: startOfMonth,
+              $lte: endOfMonth,
+            },
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            total: { $sum: '$amount' },
+          },
+        },
+      ])
+      .exec();
+
+    const currentMonthTotal = monthlyExpensesResult[0]?.total || 0;
+    const monthlyLimit = user.monthlyExpenseLimit;
+    const limitEnabled = user.limitEnabled;
+    const isLimitSet = monthlyLimit !== null && monthlyLimit !== undefined;
+    const dailyAverage = currentDay > 0 ? currentMonthTotal / currentDay : 0;
+
+    let percentageUsed = 0;
+    let alertLevel: 'safe' | 'warning' | 'critical' | 'exceeded' = 'safe';
+
+    if (isLimitSet && limitEnabled && monthlyLimit > 0) {
+      percentageUsed = (currentMonthTotal / monthlyLimit) * 100;
+
+      if (percentageUsed >= 100) {
+        alertLevel = 'exceeded';
+      } else if (percentageUsed >= 90) {
+        alertLevel = 'critical';
+      } else if (percentageUsed >= 75) {
+        alertLevel = 'warning';
+      }
+    }
+
+    return {
+      currentMonthTotal,
+      monthlyLimit,
+      limitEnabled,
+      currency: user.currency,
+      percentageUsed,
+      daysRemainingInMonth,
+      dailyAverage,
+      alertLevel,
+      isLimitSet,
     };
   }
 }
