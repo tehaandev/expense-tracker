@@ -2,9 +2,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { expenseService } from "../expense.service";
 import type {
   CreateExpenseDto,
-  UpdateExpenseDto,
   ExpenseQueryParams,
-  Expense,
+  UpdateExpenseDto,
 } from "../expense.types";
 
 // Query keys
@@ -52,7 +51,6 @@ export const useCreateExpense = () => {
   return useMutation({
     mutationFn: (data: CreateExpenseDto) => expenseService.createExpense(data),
     onSuccess: () => {
-      // Invalidate and refetch expense queries
       queryClient.invalidateQueries({ queryKey: expenseKeys.lists() });
       queryClient.invalidateQueries({ queryKey: expenseKeys.stats() });
     },
@@ -66,13 +64,7 @@ export const useUpdateExpense = () => {
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateExpenseDto }) =>
       expenseService.updateExpense(id, data),
-    onSuccess: (updatedExpense: Expense) => {
-      // Update the specific expense in cache
-      queryClient.setQueryData(
-        expenseKeys.detail(updatedExpense._id),
-        updatedExpense
-      );
-      // Invalidate list queries to refresh
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: expenseKeys.lists() });
       queryClient.invalidateQueries({ queryKey: expenseKeys.stats() });
     },
@@ -85,10 +77,7 @@ export const useDeleteExpense = () => {
 
   return useMutation({
     mutationFn: (id: string) => expenseService.deleteExpense(id),
-    onSuccess: (_, deletedId) => {
-      // Remove from cache
-      queryClient.removeQueries({ queryKey: expenseKeys.detail(deletedId) });
-      // Invalidate list queries to refresh
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: expenseKeys.lists() });
       queryClient.invalidateQueries({ queryKey: expenseKeys.stats() });
     },

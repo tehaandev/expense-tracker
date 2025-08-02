@@ -63,13 +63,13 @@ export class AuthService {
     }
 
     // Generate JWT token
-    const payload = { email: user.email, sub: user._id, name: user.name };
+    const payload = { email: user.email, sub: user.id, name: user.name };
     const token = this.jwtService.sign(payload);
 
     return {
       message: 'Login successful',
       user: {
-        id: user._id,
+        id: user.id,
         name: user.name,
         email: user.email,
       },
