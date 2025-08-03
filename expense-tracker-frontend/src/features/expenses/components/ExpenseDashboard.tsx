@@ -40,7 +40,6 @@ export default function ExpenseDashboard() {
     setShowForm(false);
     setEditingExpense(undefined);
   };
-
   return (
     <div className="min-h-screen bg-gray-50 p-3 sm:p-4 lg:p-6">
       {/* Header */}
