@@ -111,7 +111,7 @@ Expense Tracker is a full-stack application designed to help users manage their 
 
 ## Frontend Features
 
-- **Authentication**: Login and registration forms.
+- **Authentication**: Login and registration forms with validation and navigation links.
 - **Expense Dashboard**: Overview of expenses and monthly limits.
 - **Expense Management**: Add, edit, and delete expenses.
 - **Visualization**: Charts and progress bars for spending patterns.
