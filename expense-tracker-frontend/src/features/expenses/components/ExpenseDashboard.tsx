@@ -22,6 +22,8 @@ export default function ExpenseDashboard() {
   // Get monthly stats for alerts and progress
   const { data: monthlyStats } = useMonthlyExpenseStats();
 
+  console.log("Monthly Stats:", monthlyStats);
+
   const handleEditExpense = (expense: Expense) => {
     setEditingExpense(expense);
     setShowForm(true);

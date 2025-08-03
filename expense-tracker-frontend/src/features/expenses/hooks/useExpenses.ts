@@ -93,7 +93,7 @@ export const useMonthlyExpenseStats = () => {
   return useQuery({
     queryKey: expenseKeys.monthlyStats(),
     queryFn: () => expenseService.getMonthlyExpenseStats(),
-    staleTime: 1 * 60 * 1000, // 1 minute (more frequent updates for limit tracking)
+    staleTime: 5 * 60 * 1000,
   });
 };
 
@@ -107,7 +107,6 @@ export const useUpdateExpenseLimit = () => {
     onSuccess: () => {
       // Invalidate monthly stats to refresh limit data
       queryClient.invalidateQueries({ queryKey: expenseKeys.monthlyStats() });
-      // Also invalidate auth profile if needed
       queryClient.invalidateQueries({ queryKey: ["auth", "profile"] });
     },
   });

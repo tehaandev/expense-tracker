@@ -23,7 +23,7 @@ export class ExpenseService {
   ): Promise<ExpenseDocument> {
     const expense = new this.expenseModel({
       ...createExpenseDto,
-      userId,
+      userId: userId.toString(), // Ensure userId is stored as string
     });
     return expense.save();
   }
@@ -48,8 +48,11 @@ export class ExpenseService {
       limit = 10,
     } = queryDto;
 
+    // Convert userId to string to ensure proper matching
+    const userIdString = userId.toString();
+
     // Build filter object
-    const filter: any = { userId };
+    const filter: any = { userId: userIdString };
 
     if (category) {
       filter.category = { $regex: category, $options: 'i' };
@@ -130,22 +133,25 @@ export class ExpenseService {
     balance: number;
     expensesByCategory: Array<{ category: string; total: number }>;
   }> {
+    // Convert userId to string to ensure proper matching
+    const userIdString = userId.toString();
+
     const [incomeResult, expensesResult, categoryStats] = await Promise.all([
       this.expenseModel
         .aggregate([
-          { $match: { userId, type: 'income' } },
+          { $match: { userId: userIdString, type: 'income' } },
           { $group: { _id: null, total: { $sum: '$amount' } } },
         ])
         .exec(),
       this.expenseModel
         .aggregate([
-          { $match: { userId, type: 'expense' } },
+          { $match: { userId: userIdString, type: 'expense' } },
           { $group: { _id: null, total: { $sum: '$amount' } } },
         ])
         .exec(),
       this.expenseModel
         .aggregate([
-          { $match: { userId, type: 'expense' } },
+          { $match: { userId: userIdString, type: 'expense' } },
           {
             $group: {
               _id: '$category',
@@ -188,8 +194,11 @@ export class ExpenseService {
     alertLevel: 'safe' | 'warning' | 'critical' | 'exceeded';
     isLimitSet: boolean;
   }> {
+    const userIdString = userId.toString();
+    console.log(`Converted userId to string: ${userIdString}`);
+
     // Get user's limit settings
-    const user = await this.usersService.findById(userId);
+    const user = await this.usersService.findById(userIdString);
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -198,6 +207,7 @@ export class ExpenseService {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
     const daysRemainingInMonth = Math.ceil(
       (endOfMonth.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
     );
@@ -208,7 +218,7 @@ export class ExpenseService {
       .aggregate([
         {
           $match: {
-            userId,
+            userId: userIdString,
             type: 'expense',
             date: {
               $gte: startOfMonth,

@@ -40,7 +40,6 @@ class AuthService {
         "/auth/login",
         credentials
       );
-      console.log("Login response:", response);
 
       this.setToken(response.data.token);
       this.setUser(response.data.user);
