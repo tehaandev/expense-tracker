@@ -191,12 +191,6 @@ export default function ExpenseStats() {
                             {percentage.toFixed(1)}%
                           </span>
                         </div>
-                        <div
-                          style={{ color: colors[index % colors.length] }}
-                          className="text-xs mt-1 font-bold text-muted-foreground"
-                        >
-                          {formatCurrency(category.total)}
-                        </div>
                       </div>
                     </div>
                   );
