@@ -1,18 +1,21 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/features/auth/hooks/useAuth";
+import { LogOut, Plus, Settings, X } from "lucide-react";
+import { useState } from "react";
+import type { Expense } from "../expense.types";
+import { useMonthlyExpenseStats } from "../hooks/useExpenses";
 import ExpenseForm from "./ExpenseForm";
+import ExpenseLimitModal from "./ExpenseLimitModal";
 import ExpenseList from "./ExpenseList";
 import ExpenseStats from "./ExpenseStats";
 import MonthlyLimitAlert from "./MonthlyLimitAlert";
 import MonthlyProgressBar from "./MonthlyProgressBar";
-import ExpenseLimitModal from "./ExpenseLimitModal";
-import { useMonthlyExpenseStats } from "../hooks/useExpenses";
-import type { Expense } from "../expense.types";
-import { Plus, X, Settings } from "lucide-react";
 
 export default function ExpenseDashboard() {
   const [showForm, setShowForm] = useState(false);
+  const { logout } = useAuth();
+
   const [editingExpense, setEditingExpense] = useState<Expense | undefined>();
   const [isLimitModalOpen, setIsLimitModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"overview" | "expenses">(
@@ -52,7 +55,7 @@ export default function ExpenseDashboard() {
         </p>
       </div>
       <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg w-full sm:w-fit overflow-x-auto">
             <Button
               variant={activeTab === "overview" ? "default" : "secondary"}
@@ -90,6 +93,17 @@ export default function ExpenseDashboard() {
               <Plus className="h-4 w-4 flex-shrink-0" />
               <span className="hidden sm:inline">Add Expense</span>
               <span className="sm:hidden">Add</span>
+            </Button>
+            {/* Log out */}
+            <Button
+              variant="destructive"
+              onClick={logout}
+              className="flex items-center justify-center gap-2 text-sm whitespace-nowrap"
+              size="sm"
+            >
+              <LogOut className="h-4 w-4 flex-shrink-0" />
+              <span className="hidden sm:inline">Logout</span>
+              <span className="sm:hidden">Logout</span>
             </Button>
           </div>
         </div>

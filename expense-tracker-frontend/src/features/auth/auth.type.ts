@@ -12,7 +12,19 @@ export interface LoginCredentials {
   password: string;
 }
 
+export interface RegisterCredentials {
+  name: string;
+  email: string;
+  password: string;
+}
+
 export interface LoginResponse {
+  message: string;
+  token: string;
+  user: User;
+}
+
+export interface RegisterResponse {
   message: string;
   token: string;
   user: User;
@@ -23,6 +35,7 @@ export interface AuthContextType {
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (credentials: LoginCredentials) => Promise<void>;
+  register: (credentials: RegisterCredentials) => Promise<void>;
   logout: () => void;
 }
 

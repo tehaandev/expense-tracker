@@ -1,4 +1,4 @@
-// components/LoginForm.tsx
+// components/RegisterForm.tsx
 
 import React, { useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router";
@@ -13,21 +13,23 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import type { LoginCredentials } from "@/features/auth/auth.type";
+import type { RegisterCredentials } from "@/features/auth/auth.type";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 
-export default function LoginForm({
+export default function RegisterForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const [credentials, setCredentials] = useState<LoginCredentials>({
+  const [credentials, setCredentials] = useState<RegisterCredentials>({
+    name: "",
     email: "",
     password: "",
   });
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { login } = useAuth();
+  const { register } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -45,8 +47,8 @@ export default function LoginForm({
     setError("");
 
     // Basic validation
-    if (!credentials.email || !credentials.password) {
-      setError("Email and password are required");
+    if (!credentials.name || !credentials.email || !credentials.password) {
+      setError("All fields are required");
       return;
     }
 
@@ -55,13 +57,23 @@ export default function LoginForm({
       return;
     }
 
+    if (credentials.password.length < 6) {
+      setError("Password must be at least 6 characters long");
+      return;
+    }
+
+    if (credentials.password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      await login(credentials);
+      await register(credentials);
       navigate(from, { replace: true });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      setError(err instanceof Error ? err.message : "Registration failed");
     } finally {
       setIsSubmitting(false);
     }
@@ -69,10 +81,14 @@ export default function LoginForm({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setCredentials((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    if (name === "confirmPassword") {
+      setConfirmPassword(value);
+    } else {
+      setCredentials((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
     // Clear error when user starts typing
     if (error) setError("");
   };
@@ -87,14 +103,27 @@ export default function LoginForm({
     >
       <Card>
         <CardHeader>
-          <CardTitle>Login to your account</CardTitle>
+          <CardTitle>Create your account</CardTitle>
           <CardDescription>
-            Enter your email below to login to your account
+            Enter your information below to create your account
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
+              <div className="grid gap-3">
+                <Label htmlFor="name">Full Name</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  type="text"
+                  placeholder="John Doe"
+                  value={credentials.name}
+                  onChange={handleInputChange}
+                  disabled={isSubmitting}
+                  required
+                />
+              </div>
               <div className="grid gap-3">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -109,15 +138,26 @@ export default function LoginForm({
                 />
               </div>
               <div className="grid gap-3">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                </div>
+                <Label htmlFor="password">Password</Label>
                 <Input
                   id="password"
                   name="password"
                   type="password"
-                  placeholder="your-super-secret-password"
+                  placeholder="Choose a strong password"
                   value={credentials.password}
+                  onChange={handleInputChange}
+                  disabled={isSubmitting}
+                  required
+                />
+              </div>
+              <div className="grid gap-3">
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  placeholder="Confirm your password"
+                  value={confirmPassword}
                   onChange={handleInputChange}
                   disabled={isSubmitting}
                   required
@@ -136,12 +176,12 @@ export default function LoginForm({
                   className="w-full"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Logging in..." : "Login"}
+                  {isSubmitting ? "Creating account..." : "Create Account"}
                 </Button>
                 <div className="text-center text-sm">
-                  Don't have an account?{" "}
-                  <Link to="/register" className="underline">
-                    Sign up
+                  Already have an account?{" "}
+                  <Link to="/login" className="underline">
+                    Sign in
                   </Link>
                 </div>
               </div>

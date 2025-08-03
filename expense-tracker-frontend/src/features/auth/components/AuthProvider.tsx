@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { authService } from "../auth.service";
-import type { AuthContextType, LoginCredentials, User } from "../auth.type";
+import type {
+  AuthContextType,
+  LoginCredentials,
+  RegisterCredentials,
+  User,
+} from "../auth.type";
 import { AuthContext } from "./AuthContext";
 
 interface AuthProviderProps {
@@ -37,6 +42,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const register = async (credentials: RegisterCredentials): Promise<void> => {
+    setIsLoading(true);
+    try {
+      const response = await authService.register(credentials);
+      setUser(response.user);
+    } catch (error) {
+      console.error("Register error:", error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const logout = (): void => {
     authService.logout();
     setUser(null);
@@ -47,6 +65,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isLoading,
     isAuthenticated: !!user && authService.isAuthenticated(),
     login,
+    register,
     logout,
   };
 

@@ -5,6 +5,7 @@ import ProtectedRoute from "./features/auth/components/ProtectedRoutes";
 import { AuthProvider } from "./features/auth/components/AuthProvider";
 import PublicRoute from "./features/auth/components/PublicRoute";
 import LoginForm from "./components/login-form";
+import RegisterForm from "./components/register-form";
 import ExpenseDashboard from "./features/expenses/components/ExpenseDashboard";
 
 // Create a client
@@ -25,7 +26,7 @@ function App() {
           <Routes>
             <Route path="/" element={<PublicRoute />}>
               <Route path="login" element={<LoginForm />} />
-              <Route path="register" element={<div>Register Page</div>} />
+              <Route path="register" element={<RegisterForm />} />
             </Route>
           </Routes>
           <Routes>

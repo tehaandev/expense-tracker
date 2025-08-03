@@ -1,5 +1,11 @@
 import { API } from "@/lib/api";
-import type { LoginCredentials, LoginResponse, User } from "./auth.type";
+import type {
+  LoginCredentials,
+  LoginResponse,
+  RegisterCredentials,
+  RegisterResponse,
+  User,
+} from "./auth.type";
 import type { UpdateExpenseLimitDto } from "../expenses/expense.types";
 
 const TOKEN_KEY = "auth_token";
@@ -47,6 +53,24 @@ class AuthService {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || "Login failed";
+      throw new Error(errorMessage);
+    }
+  }
+
+  async register(credentials: RegisterCredentials): Promise<RegisterResponse> {
+    try {
+      const response = await API.post<RegisterResponse>(
+        "/auth/register",
+        credentials
+      );
+
+      this.setToken(response.data.token);
+      this.setUser(response.data.user);
+      return response.data;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || "Registration failed";
       throw new Error(errorMessage);
     }
   }
