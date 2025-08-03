@@ -71,7 +71,7 @@ export default function ExpenseDashboard() {
               onClick={() => setActiveTab("expenses")}
               className="flex-1 sm:flex-none whitespace-nowrap"
             >
-              All Expenses
+              All
             </Button>
           </div>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2 min-w-0">
@@ -91,7 +91,7 @@ export default function ExpenseDashboard() {
               size="sm"
             >
               <Plus className="h-4 w-4 flex-shrink-0" />
-              <span className="hidden sm:inline">Add Expense</span>
+              <span className="hidden sm:inline">Add Item</span>
               <span className="sm:hidden">Add</span>
             </Button>
             {/* Log out */}
@@ -155,7 +155,7 @@ export default function ExpenseDashboard() {
               <div className="space-y-4 sticky top-4">
                 <div className="flex items-center justify-between">
                   <h2 className="text-lg font-semibold truncate flex-1 mr-2">
-                    {editingExpense ? "Edit Expense" : "Add New Expense"}
+                    {editingExpense ? "Edit Expense" : "Add New Item"}
                   </h2>
                   <Button
                     variant="ghost"
@@ -186,7 +186,7 @@ export default function ExpenseDashboard() {
                     className="w-full flex items-center justify-center gap-2 text-sm sm:text-base"
                   >
                     <Plus className="h-4 w-4 flex-shrink-0" />
-                    Add New Expense
+                    Add New Item
                   </Button>
                 </CardContent>
               </Card>

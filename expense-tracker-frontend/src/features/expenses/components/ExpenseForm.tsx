@@ -136,7 +136,7 @@ export default function ExpenseForm({
   return (
     <Card id="expense-form" className="w-full max-w-md">
       <CardHeader>
-        <CardTitle>{isEditing ? "Edit Expense" : "Add New Expense"}</CardTitle>
+        <CardTitle>{isEditing ? "Edit Expense" : "Add New Item"}</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -243,8 +243,8 @@ export default function ExpenseForm({
                   ? "Updating..."
                   : "Creating..."
                 : isEditing
-                ? "Update Expense"
-                : "Create Expense"}
+                ? "Update Item"
+                : "Create Item"}
             </Button>
             {onCancel && (
               <Button
