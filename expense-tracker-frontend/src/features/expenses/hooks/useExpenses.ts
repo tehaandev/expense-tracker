@@ -64,6 +64,7 @@ export const useCreateExpense = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: expenseKeys.lists() });
       queryClient.invalidateQueries({ queryKey: expenseKeys.stats() });
+      queryClient.invalidateQueries({ queryKey: expenseKeys.monthlyStats() });
     },
   });
 };
@@ -75,9 +76,12 @@ export const useUpdateExpense = () => {
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateExpenseDto }) =>
       expenseService.updateExpense(id, data),
-    onSuccess: () => {
+    onSuccess: (expense) => {
       queryClient.invalidateQueries({ queryKey: expenseKeys.lists() });
       queryClient.invalidateQueries({ queryKey: expenseKeys.stats() });
+      queryClient.invalidateQueries({
+        queryKey: expenseKeys.detail(expense._id),
+      });
     },
   });
 };
