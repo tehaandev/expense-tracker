@@ -170,22 +170,28 @@ export default function ExpenseStats() {
                       key={category.category}
                       className="flex items-start gap-3"
                     >
-                      <div
-                        className="w-4 h-4 rounded-full mt-1"
+                      {/* <div
+                        className="w-2 h-2 rounded-full mt-1"
                         style={{
                           backgroundColor: colors[index % colors.length],
                         }}
-                      />
+                      /> */}
                       <div className="flex-1">
                         <div className="flex justify-between text-sm">
-                          <span className="truncate font-medium">
+                          <span
+                            style={{ color: colors[index % colors.length] }}
+                            className="truncate font-medium"
+                          >
                             {category.category}
                           </span>
                           <span className="text-muted-foreground">
                             {percentage.toFixed(1)}%
                           </span>
                         </div>
-                        <div className="text-xs text-muted-foreground">
+                        <div
+                          style={{ color: colors[index % colors.length] }}
+                          className="text-xs mt-1 font-bold text-muted-foreground"
+                        >
                           {formatCurrency(category.total)}
                         </div>
                       </div>
