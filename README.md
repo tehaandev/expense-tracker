@@ -121,8 +121,8 @@ Expense Tracker is a full-stack application designed to help users manage their 
 ## Technologies Used
 
 - **Backend**: NestJS, TypeScript, JWT, bcrypt.
-- **Frontend**: React, Vite, TypeScript, CSS.
-- **Database**: MongoDB, Prisma ORM (PostgreSQL).
+- **Frontend**: React, Vite, TypeScript, Tailwind, Shadcn
+- **Database**: MongoDB, Mongoose
 
 ---
 
