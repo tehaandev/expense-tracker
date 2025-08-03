@@ -1,9 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
+import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { useExpenseStats } from "../hooks/useExpenses";
 import { DollarSign, TrendingUp, TrendingDown, PieChart } from "lucide-react";
 import { PieChart as RechartsPieChart, Pie, Cell } from "recharts";
@@ -137,18 +133,31 @@ export default function ExpenseStats() {
                       ))}
                     </Pie>
                     <ChartTooltip
+                      cursor={false}
                       content={({ active, payload }) => {
-                        if (active && payload?.length) {
-                          const { name, value } = payload[0];
+                        if (active && payload && payload.length > 0) {
+                          const data = payload[0];
                           return (
-                            <ChartTooltipContent>
-                              <div className="flex flex-col gap-1">
-                                <span className="font-semibold">{name}</span>
-                                <span className="text-muted-foreground">
-                                  {formatCurrency(value as number)}
-                                </span>
+                            <div className="rounded-lg border bg-background p-2 shadow-sm">
+                              <div className="grid gap-2">
+                                <div className="flex flex-col">
+                                  <span className="text-[0.70rem] uppercase text-muted-foreground">
+                                    Category
+                                  </span>
+                                  <span className="font-bold text-muted-foreground">
+                                    {data.name}
+                                  </span>
+                                </div>
+                                <div className="flex flex-col">
+                                  <span className="text-[0.70rem] uppercase text-muted-foreground">
+                                    Amount
+                                  </span>
+                                  <span className="font-bold">
+                                    {formatCurrency(data.value as number)}
+                                  </span>
+                                </div>
                               </div>
-                            </ChartTooltipContent>
+                            </div>
                           );
                         }
                         return null;
@@ -170,12 +179,6 @@ export default function ExpenseStats() {
                       key={category.category}
                       className="flex items-start gap-3"
                     >
-                      {/* <div
-                        className="w-2 h-2 rounded-full mt-1"
-                        style={{
-                          backgroundColor: colors[index % colors.length],
-                        }}
-                      /> */}
                       <div className="flex-1">
                         <div className="flex justify-between text-sm">
                           <span
