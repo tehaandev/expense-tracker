@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Trash2,
   Edit,
@@ -14,30 +13,34 @@ import { Option, Select } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-
+import { useDebouncedState } from "@/hooks/useDebounce";
 interface ExpenseListProps {
   onEditExpense?: (expense: Expense) => void;
 }
 
 export default function ExpenseList({ onEditExpense }: ExpenseListProps) {
-  const [filters, setFilters] = useState<ExpenseQueryParams>({
-    page: 1,
-    limit: 10,
-    sortBy: "date",
-    sortOrder: "desc",
-  });
+  const [uiFilters, debouncedFilters, setFilters] =
+    useDebouncedState<ExpenseQueryParams>(
+      {
+        page: 1,
+        limit: 10,
+        sortBy: "date",
+        sortOrder: "desc",
+      },
+      500
+    );
 
-  const { data, isLoading, error } = useExpenses(filters);
+  const { data, isLoading, error } = useExpenses(debouncedFilters);
   const deleteMutation = useDeleteExpense();
 
   const handleFilterChange = (
     key: keyof ExpenseQueryParams,
-    value: string | number
+    value: string | number | null
   ) => {
     setFilters((prev) => ({
       ...prev,
       [key]: value,
-      page: key !== "page" ? 1 : Number(value),
+      page: 1, // Reset to first page on filter change
     }));
   };
 
@@ -96,7 +99,7 @@ export default function ExpenseList({ onEditExpense }: ExpenseListProps) {
               <Label htmlFor="type-filter">Type</Label>
               <Select
                 id="type-filter"
-                value={filters.type || ""}
+                value={uiFilters.type || ""}
                 onChange={(e) => handleFilterChange("type", e.target.value)}
               >
                 <Option value="">All</Option>
@@ -110,7 +113,7 @@ export default function ExpenseList({ onEditExpense }: ExpenseListProps) {
               <Input
                 id="category-filter"
                 placeholder="e.g. Food"
-                value={filters.category || ""}
+                value={uiFilters.category || ""}
                 onChange={(e) => handleFilterChange("category", e.target.value)}
               />
             </div>
@@ -120,7 +123,7 @@ export default function ExpenseList({ onEditExpense }: ExpenseListProps) {
               <Input
                 id="start-date"
                 type="date"
-                value={filters.startDate || ""}
+                value={uiFilters.startDate || ""}
                 onChange={(e) =>
                   handleFilterChange("startDate", e.target.value)
                 }
@@ -132,7 +135,7 @@ export default function ExpenseList({ onEditExpense }: ExpenseListProps) {
               <Input
                 id="end-date"
                 type="date"
-                value={filters.endDate || ""}
+                value={uiFilters.endDate || ""}
                 onChange={(e) => handleFilterChange("endDate", e.target.value)}
               />
             </div>
@@ -143,7 +146,7 @@ export default function ExpenseList({ onEditExpense }: ExpenseListProps) {
               <Label htmlFor="sort-by">Sort By</Label>
               <Select
                 id="sort-by"
-                value={filters.sortBy || "date"}
+                value={uiFilters.sortBy || "date"}
                 onChange={(e) => handleFilterChange("sortBy", e.target.value)}
               >
                 <Option value="date">Date</Option>
@@ -156,7 +159,7 @@ export default function ExpenseList({ onEditExpense }: ExpenseListProps) {
               <Label htmlFor="sort-order">Sort Order</Label>
               <Select
                 id="sort-order"
-                value={filters.sortOrder || "desc"}
+                value={uiFilters.sortOrder || "desc"}
                 onChange={(e) =>
                   handleFilterChange("sortOrder", e.target.value)
                 }
@@ -292,21 +295,25 @@ export default function ExpenseList({ onEditExpense }: ExpenseListProps) {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => handleFilterChange("page", (filters.page || 1) - 1)}
-            disabled={filters.page === 1}
+            onClick={() =>
+              handleFilterChange("page", (uiFilters.page || 1) - 1)
+            }
+            disabled={uiFilters.page === 1}
           >
             Previous
           </Button>
 
           <span className="text-sm">
-            Page {filters.page || 1} of {totalPages}
+            Page {uiFilters.page || 1} of {totalPages}
           </span>
 
           <Button
             variant="outline"
             size="sm"
-            onClick={() => handleFilterChange("page", (filters.page || 1) + 1)}
-            disabled={filters.page === totalPages}
+            onClick={() =>
+              handleFilterChange("page", (uiFilters.page || 1) + 1)
+            }
+            disabled={uiFilters.page === totalPages}
           >
             Next
           </Button>

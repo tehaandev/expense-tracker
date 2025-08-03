@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { expenseService } from "../expense.service";
 import { authService } from "@/features/auth/auth.service";
 import type {
@@ -26,6 +31,7 @@ export const useExpenses = (params?: ExpenseQueryParams) => {
     queryKey: expenseKeys.list(params),
     queryFn: () => expenseService.getExpenses(params),
     staleTime: 5 * 60 * 1000, // 5 minutes
+    placeholderData: keepPreviousData,
   });
 };
 
@@ -35,6 +41,7 @@ export const useExpense = (id: string) => {
     queryKey: expenseKeys.detail(id),
     queryFn: () => expenseService.getExpenseById(id),
     enabled: !!id,
+    placeholderData: keepPreviousData,
   });
 };
 
@@ -44,6 +51,7 @@ export const useExpenseStats = () => {
     queryKey: expenseKeys.stats(),
     queryFn: () => expenseService.getExpenseStats(),
     staleTime: 5 * 60 * 1000, // 5 minutes
+    placeholderData: keepPreviousData,
   });
 };
 
@@ -94,6 +102,7 @@ export const useMonthlyExpenseStats = () => {
     queryKey: expenseKeys.monthlyStats(),
     queryFn: () => expenseService.getMonthlyExpenseStats(),
     staleTime: 5 * 60 * 1000,
+    placeholderData: keepPreviousData,
   });
 };
 
