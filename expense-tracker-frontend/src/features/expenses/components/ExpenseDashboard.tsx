@@ -27,6 +27,10 @@ export default function ExpenseDashboard() {
   const handleEditExpense = (expense: Expense) => {
     setEditingExpense(expense);
     setShowForm(true);
+    const formElement = document.getElementById("expense-form");
+    if (formElement) {
+      formElement.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   const handleFormSuccess = () => {
@@ -48,7 +52,7 @@ export default function ExpenseDashboard() {
             <h1 className="text-3xl font-bold text-gray-900">
               Expense Tracker
             </h1>
-            <p className="text-gray-600 mt-1">
+            <p className="text-gray-600 mt-1 text-left">
               Manage your finances efficiently
             </p>
           </div>
@@ -161,13 +165,6 @@ export default function ExpenseDashboard() {
                     <Plus className="h-4 w-4" />
                     Add New Expense
                   </Button>
-
-                  <div className="space-y-2 text-sm text-gray-600">
-                    <p>• Track your income and expenses</p>
-                    <p>• Categorize your transactions</p>
-                    <p>• View detailed analytics</p>
-                    <p>• Export your data</p>
-                  </div>
                 </CardContent>
               </Card>
             )}

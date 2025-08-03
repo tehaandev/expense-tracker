@@ -96,8 +96,6 @@ export class ExpenseService {
   }
 
   async findOne(id: string, userId: string): Promise<ExpenseDocument> {
-    console.log(`Finding expense with ID: ${id} for user: ${userId}`);
-
     const expense = await this.expenseModel.findById(id).exec();
 
     if (!expense) {
@@ -195,8 +193,6 @@ export class ExpenseService {
     isLimitSet: boolean;
   }> {
     const userIdString = userId.toString();
-    console.log(`Converted userId to string: ${userIdString}`);
-
     // Get user's limit settings
     const user = await this.usersService.findById(userIdString);
     if (!user) {

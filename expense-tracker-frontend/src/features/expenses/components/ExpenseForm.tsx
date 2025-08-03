@@ -134,7 +134,7 @@ export default function ExpenseForm({
   };
 
   return (
-    <Card className="w-full max-w-md">
+    <Card id="expense-form" className="w-full max-w-md">
       <CardHeader>
         <CardTitle>{isEditing ? "Edit Expense" : "Add New Expense"}</CardTitle>
       </CardHeader>
